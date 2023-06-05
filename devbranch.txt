@@ -1,2 +1,0 @@
-created file in dev branch
-storing files in stash list locafile.txt
