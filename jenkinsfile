@@ -4,8 +4,8 @@ pipeline {
         stage ("1. install nginx") {
             steps {
                 sh "sudo amazon-linux-extras install nginx1"
-                sh "mkdir -p inbound"
-                sh "mkdir -p outbound"
+                sh "mkdir -p mybond"
+                sh "mkdir -p james"
             }
         }
          stage ("2. service install") {
