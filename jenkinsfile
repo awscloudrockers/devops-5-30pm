@@ -34,7 +34,7 @@ node
     writeFile file:"sample.txt", text: "this is pipeline class"
 
     stage "9. create folder and  file and put some data"
-    sh mkdir -p testing-cicd
+    sh "mkdir -p testing-cicd"
     writeFile file:"testing-cicd/sample.txt", text: "this is pipeline class"
 }
 
