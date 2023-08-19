@@ -44,6 +44,5 @@ node {
     sh "docker pull centos"
     sh "sudo usermod -a -G docker jenkins"
     sh "sudo systemctl restart jenkins"
-}
-
-    
+    sh "sudo systemctl enable jenkins"
+} 
