@@ -1,5 +1,4 @@
-node
-{
+node {
     stage "1. updating jenkins machine"
     sh "sudo yum update -y"
     sh "sudo yum upgrade -y"
