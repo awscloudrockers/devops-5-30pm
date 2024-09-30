@@ -1,48 +1,63 @@
-node {
-    stage "1. updating jenkins machine"
-    sh "sudo yum update -y"
-    sh "sudo yum upgrade -y"
-    
-    stage "2.create some folders"
-    sh "mkdir -p devops-5pm"
-    sh "mkdir -p besant/devops/6pm-batch"
-    
-    stage "3. install required packages"
-    sh "sudo yum install -y git"
-    sh "sudo yum install -y docker"
-    sh "sudo yum install -y httpd"
-    
-    stage "4. restart and enable the services"
-    sh "sudo systemctl restart docker"
-    sh "sudo systemctl enable docker"
-    sh "sudo systemctl restart httpd"
-    sh "sudo systemctl enable httpd"
-    
-    stage "5. view uptime and date"
-    sh "date"
-    sh "uptime"
-    sh "cal 2024"
-    
-    stage "6. build the code"
-    echo "building the code from jenkinsfile in UI"
-    
-    stage "7. create file"
-    sh "touch test.txt"
-    
-    stage "8. create file and put some data"
-    writeFile file:"sample.txt", text: "this is pipeline class"
+pipeline {
+    agent any
 
-    stage "9. create folder and  file and put some data"
-    sh "mkdir -p testing-cicd"
-    writeFile file:"testing-cicd/sample.txt", text: "this is pipeline class"
+    // Define environment variables (optional)
+    environment {
+        // Example of a global environment variable
+        PROJECT_NAME = 'MyProject'
+    }
 
-    stage "10. create docker images"
-    sh "docker pull ubuntu"
-    sh "docker pull amazonlinux"
-    sh "docker pull fedora"
-    sh "docker images"
-    sh "docker pull centos"
-    sh "sudo usermod -a -G docker jenkins"
-    sh "sudo systemctl status jenkins"
-    sh "sudo systemctl enable jenkins"
-} 
+    stages {
+        // First stage: Clean workspace
+        stage('Clean Workspace') {
+            steps {
+                echo "Cleaning workspace for branch: ${env.BRANCH_NAME}"
+                deleteDir() // Clean the workspace before running anything
+            }
+        }
+
+        // Second stage: Build (common to all branches)
+        stage('Build') {
+            steps {
+                echo "Building the project on branch: ${env.BRANCH_NAME}"
+                // Example build step
+                sh 'echo "Building..."'
+            }
+        }
+
+        // Third stage: Conditional execution for different branches
+        stage('Test') {
+            when {
+                expression { env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature/*' }
+            }
+            steps {
+                echo "Running tests on branch: ${env.BRANCH_NAME}"
+                // Example test step
+                sh 'echo "Running tests..."'
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'release/*' }
+            }
+            steps {
+                echo "Deploying the project from branch: ${env.BRANCH_NAME}"
+                // Example deploy step
+                sh 'echo "Deploying..."'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completed for branch: ${env.BRANCH_NAME}"
+        }
+        success {
+            echo "Success! All steps passed on branch: ${env.BRANCH_NAME}"
+        }
+        failure {
+            echo "Pipeline failed for branch: ${env.BRANCH_NAME}"
+        }
+    }
+}
