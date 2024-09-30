@@ -1,61 +1,29 @@
 pipeline {
     agent any
     stages {
-        stage ("1. install nginx") {
+        stage ("1. Install Nginx and Create Directories") {
             steps {
-                sh "sudo amazon-linux-extras install nginx1"
+                sh "sudo apt update"
+                sh "sudo apt install -y nginx"
                 sh "mkdir -p mybond"
                 sh "mkdir -p james"
             }
         }
-         stage ("2. service install") {
+        
+        stage ("2. Create Test File in mybond Directory") {
             steps {
-                sh "sudo yum update -y"
-                sh "sudo yum install -y docker"
+                // Creates a file named test.txt inside the mybond directory
+                sh "echo 'This is a test file' > mybond/test.txt"
+                sh "date > mybond/date.txt"
             }
         }
-        stage ("3. service start") {
+
+        stage ("3. Create Another Test File in james Directory") {
             steps {
-                sh "sudo systemctl restart docker"
-                sh "sudo systemctl enable docker"
+                // Creates another test file in the james directory
+                sh "echo 'This is another test file' > james/test1.txt"
+                sh "date > james/date.txt"
             }
         }
-        stage ("4. nginx") {
-            steps {
-                sh "rpm -qa | grep nginx"
-            }
-        }
-        stage ("5. create file") {
-            steps {
-                sh "echo test.txt"
-                sh "date"
-                sh "cal"
-            }
-        }
-        stage ("6. create file") {
-            steps {
-                sh "echo test1.txt"
-                sh "date"
-                sh "cal"
-            }
-        }
-        stage ("7. get inside folder") {
-	    steps {
-	            sh "sudo chmod -R 777 /home/ec2-user/"
-                sh "cd /home/ec2-user/"
-                writeFile(file: "/home/ec2-user/index.html", text: "this is besant website", encoding: "UTF-8") 
-	     }
-        } 	
-       stage ("8. verify linux commands") {
-	    steps {
-	            sh "pwd"
-                sh "cd /home/ec2-user/"
-                sh "touch error.html"
-                writeFile(file: "/home/ec2-user/index.html", text: "this is besant website", encoding: "UTF-8") 
-	     }
-        } 	
     }
 }
-
-
-
